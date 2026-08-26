@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { mockCustomers } from "@/lib/mock-data";
+import { createCustomer, listCustomers } from "@/lib/customer-store";
+import { customerFormSchema } from "@/lib/customer-schema";
 import type { Customer, CustomersResponse } from "@/lib/types";
 
 const SORTABLE_FIELDS = [
@@ -9,11 +10,19 @@ const SORTABLE_FIELDS = [
   "company",
   "status",
   "lastContactDate",
+  "order",
 ] as const;
 type SortableField = (typeof SORTABLE_FIELDS)[number];
 
 function isSortableField(value: string): value is SortableField {
   return (SORTABLE_FIELDS as readonly string[]).includes(value);
+}
+
+function parseListParam(value: string | null): string[] {
+  return (value ?? "")
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
 }
 
 export async function GET(request: NextRequest) {
@@ -31,10 +40,17 @@ export async function GET(request: NextRequest) {
     Math.max(1, Number(searchParams.get("pageSize")) || 10)
   );
 
+  const statusFilter = parseListParam(searchParams.get("status"));
+  const companyFilter = parseListParam(searchParams.get("company"));
+  const dateFrom = searchParams.get("dateFrom") ?? "";
+  const dateTo = searchParams.get("dateTo") ?? "";
+  const phoneFilter = (searchParams.get("phone") ?? "").trim();
+  const emailFilter = (searchParams.get("email") ?? "").trim().toLowerCase();
+
   // simulate network latency so loading states are visible
   await new Promise((resolve) => setTimeout(resolve, 300));
 
-  let results: Customer[] = mockCustomers;
+  let results: Customer[] = listCustomers();
 
   if (search) {
     results = results.filter(
@@ -45,8 +61,41 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  if (statusFilter.length > 0) {
+    results = results.filter((customer) => statusFilter.includes(customer.status));
+  }
+
+  if (companyFilter.length > 0) {
+    results = results.filter((customer) => companyFilter.includes(customer.company));
+  }
+
+  if (dateFrom) {
+    const fromTime = new Date(dateFrom).getTime();
+    results = results.filter(
+      (customer) => new Date(customer.lastContactDate).getTime() >= fromTime
+    );
+  }
+
+  if (dateTo) {
+    const toTime = new Date(dateTo).getTime() + 24 * 60 * 60 * 1000 - 1;
+    results = results.filter(
+      (customer) => new Date(customer.lastContactDate).getTime() <= toTime
+    );
+  }
+
+  if (phoneFilter) {
+    results = results.filter((customer) => customer.phone.includes(phoneFilter));
+  }
+
+  if (emailFilter) {
+    results = results.filter((customer) =>
+      customer.email.toLowerCase().includes(emailFilter)
+    );
+  }
+
   results = [...results].sort((a, b) => {
-    const comparison = a[sortBy].localeCompare(b[sortBy]);
+    const comparison =
+      sortBy === "order" ? a.order - b.order : a[sortBy].localeCompare(b[sortBy]);
     return sortDir === "asc" ? comparison : -comparison;
   });
 
@@ -56,4 +105,21 @@ export async function GET(request: NextRequest) {
 
   const body: CustomersResponse = { data, total, page, pageSize };
   return NextResponse.json(body);
+}
+
+export async function POST(request: NextRequest) {
+  const json = await request.json();
+  const parsed = customerFormSchema.safeParse(json);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Invalid customer data", issues: parsed.error.issues },
+      { status: 400 }
+    );
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  const customer = createCustomer(parsed.data);
+  return NextResponse.json(customer, { status: 201 });
 }

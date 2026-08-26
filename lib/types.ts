@@ -8,6 +8,8 @@ export interface Customer {
   company: string;
   status: CustomerStatus;
   lastContactDate: string;
+  notes: string;
+  order: number;
 }
 
 export interface CustomersResponse {
@@ -15,4 +17,19 @@ export interface CustomersResponse {
   total: number;
   page: number;
   pageSize: number;
+}
+
+export interface CustomerFilters {
+  status: CustomerStatus[];
+  companies: string[];
+  dateFrom: string;
+  dateTo: string;
+  phone: string;
+  email: string;
+}
+
+export interface SavedFilter {
+  id: string;
+  name: string;
+  filters: CustomerFilters;
 }

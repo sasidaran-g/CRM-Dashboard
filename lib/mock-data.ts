@@ -58,9 +58,13 @@ function generateCustomers(count: number): Customer[] {
       company,
       status,
       lastContactDate,
+      notes: "",
+      order: i + 1,
     });
   }
   return customers;
 }
 
 export const mockCustomers: Customer[] = generateCustomers(150);
+
+export const companyOptions: string[] = [...COMPANIES].sort();

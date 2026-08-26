@@ -2,9 +2,15 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import type { CustomersResponse } from "@/lib/types";
+import type { CustomerFilters, CustomersResponse } from "@/lib/types";
 
-export type SortField = "name" | "email" | "company" | "status" | "lastContactDate";
+export type SortField =
+  | "name"
+  | "email"
+  | "company"
+  | "status"
+  | "lastContactDate"
+  | "order";
 export type SortDir = "asc" | "desc";
 
 export interface UseCustomersParams {
@@ -13,6 +19,7 @@ export interface UseCustomersParams {
   sortDir: SortDir;
   page: number;
   pageSize: number;
+  filters: CustomerFilters;
 }
 
 export function useCustomers(params: UseCustomersParams) {
@@ -25,6 +32,12 @@ export function useCustomers(params: UseCustomersParams) {
         sortDir: params.sortDir,
         page: String(params.page),
         pageSize: String(params.pageSize),
+        status: params.filters.status.join(","),
+        company: params.filters.companies.join(","),
+        dateFrom: params.filters.dateFrom,
+        dateTo: params.filters.dateTo,
+        phone: params.filters.phone,
+        email: params.filters.email,
       });
 
       const res = await fetch(`/api/customers?${query.toString()}`);
