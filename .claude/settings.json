@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000/api/customers?page=1\\\\&pageSize=5)",
+      "Bash(chromium-cli --session crm)",
+      "Bash(node -e \"console.log\\(require.resolve\\('playwright'\\)\\)\")",
+      "Bash(npx --yes playwright --version)",
+      "Bash(npx --yes playwright install chromium --with-deps)",
+      "Bash(npm root *)",
+      "Bash(NODE_PATH=$\\(npm root -g 2>/dev/null\\) node \"C:\\\\Users\\\\sasid\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--crm-dashboard\\\\8b0fc84a-08ca-4b22-b96c-9f61ed5de20e\\\\scratchpad\\\\verify.js\")",
+      "Bash(npm ls *)",
+      "Read(//c/Users/sasid/.npm/**)",
+      "Bash(npm config *)",
+      "Bash(npm install *)",
+      "Bash(node verify.js)",
+      "Bash(powershell -Command 'Get-NetTCPConnection -LocalPort 3000 -State Listen | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }')"
+    ]
+  }
+}
