@@ -162,10 +162,10 @@ export function CustomerDetailsDialog({
             </dl>
 
             <DialogFooter>
-              <Button variant="destructive" onClick={() => setMode("delete")}>
+              <Button variant="destructive" className="cursor-pointer" onClick={() => setMode("delete")}>
                 Delete
               </Button>
-              <Button onClick={() => setMode("edit")}>Edit Customer</Button>
+              <Button className="cursor-pointer" onClick={() => setMode("edit")}>Edit Customer</Button>
             </DialogFooter>
           </>
         )}
