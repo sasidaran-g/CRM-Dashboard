@@ -19,6 +19,8 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
+  ChevronLeft,
+  ChevronRight,
   GripVertical,
   ListFilter,
   Plus,
@@ -145,7 +147,7 @@ export function CustomerTable() {
               className="pl-8"
             />
           </div>
-          <Button variant="outline" onClick={() => setFiltersOpen(true)}>
+          <Button variant="outline" className="cursor-pointer" onClick={() => setFiltersOpen(true)}>
             <ListFilter />
             Filters
             {activeFilterCount > 0 && (
@@ -156,6 +158,7 @@ export function CustomerTable() {
           </Button>
           <Button
             variant={isCustomOrder ? "secondary" : "outline"}
+            className="cursor-pointer"
             onClick={() => {
               setSortBy("order");
               setSortDir("asc");
@@ -165,7 +168,7 @@ export function CustomerTable() {
             <GripVertical />
             Reorder
           </Button>
-          <Button onClick={() => setAddOpen(true)}>
+          <Button className="cursor-pointer" onClick={() => setAddOpen(true)}>
             <Plus />
             Add Customer
           </Button>
@@ -280,14 +283,8 @@ export function CustomerTable() {
         </DndContext>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-end gap-4">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>
-            {total === 0
-              ? "No entries"
-              : `Showing ${rangeStart} to ${rangeEnd} of ${total} entries`}
-            {isFetching && !isLoading ? " (updating...)" : ""}
-          </span>
           <Select
             value={String(pageSize)}
             onValueChange={(value) => {
@@ -311,22 +308,26 @@ export function CustomerTable() {
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
+            className="cursor-pointer"
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
+            aria-label="Previous page"
           >
-            Previous
+            <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="text-sm text-muted-foreground">
             Page {page} of {totalPages}
           </span>
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
+            className="cursor-pointer"
             disabled={page >= totalPages}
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            aria-label="Next page"
           >
-            Next
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
